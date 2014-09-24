@@ -3,11 +3,102 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <cmath>
+
 using namespace std;
 
-long summation(vector<int> &values)
+void printVector(vector<long> a)
 {
-    return 0;
+    for(auto i : a)    
+    {
+        cout << i << " "    ;
+    }
+    cout << endl;
+}
+
+long f(long n)
+{
+    if(n == 0)    
+    {
+        return 1;    
+    }
+    if(n == 1)
+    {
+        return 3;
+    }
+    
+    return 6*f(n - 1) - f(n -2);
+}
+
+long summation(vector<long> &set)
+{
+    //get each subset
+    vector< vector<long> > subset;
+    vector<long> empty;
+    //start with empty
+    subset.push_back( empty );
+    //for holding temp subsets that will be added later
+    vector< vector<long> > subsetTemp;
+    
+    for (int i = 0; i < set.size(); i++)
+    {
+        //store previous subset data
+         subsetTemp = subset;
+    
+        for (int j = 0; j < subsetTemp.size(); j++)
+        {
+            subsetTemp[j].push_back( set[i] );
+        }
+
+        for (int j = 0; j < subsetTemp.size(); j++)
+        {
+            subset.push_back( subsetTemp[j] );
+        }
+    }
+    
+    long setSize = set.size();
+    vector<long> compliment(setSize);
+    sort(set.begin(), set.end());
+    long sum = 0;
+    for(int i = 0; i < subset.size(); i++)
+    {
+        sort(subset[i].begin(), subset[i].end());
+        compliment.resize(setSize - subset[i].size());
+        set_difference(set.begin(), set.end(), subset[i].begin(), subset[i].end(), compliment.begin());
+        //printVector(subset[i]);
+        //printVector(compliment);
+        int value = abs(accumulate(subset[i].begin(), subset[i].end(), 0) - accumulate(compliment.begin(), compliment.end(), 0));
+        
+        sum += f(value);
+    }
+    
+    return sum;    
+}
+
+vector< vector<long> > getAllSubsets(vector<long> set)
+{
+    //get each subset
+    vector< vector<long> > subset;
+    vector<long> empty;
+    //start with empty
+    subset.push_back( empty );
+    //for holding temp subsets that will be added later
+    vector< vector<long> > subsetTemp;
+    
+    for (int i = 0; i < set.size(); i++)
+    {
+         subsetTemp = subset;
+
+        //increment old set to add new ones
+        for (int j = 0; j < subsetTemp.size(); j++)
+            subsetTemp[j].push_back( set[i] );
+
+        //add the incremented set to the old set :D
+        for (int j = 0; j < subsetTemp.size(); j++)
+            subset.push_back( subsetTemp[j] );
+    }
+    
+    return subset;
 }
 
 int main() {
